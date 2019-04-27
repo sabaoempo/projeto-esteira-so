@@ -1,15 +1,13 @@
 import java.util.LinkedList;
+import java.util.List;
 
 public class Robo {
 	public Robo() {
 		
 	}
-	
-	public void empacotar(Produto produto) {
-		//pega o produto e coloca dentro de um pacote
-		System.out.println("Produto"+ produto.getFornecedor() +"empacotado!");
-	}
-	
+
+	//empacotar
+	//se o volume do pacote couber mais um produto, adiciona ele no pacote
 	public static void adicionaNoPacote(LinkedList<Produto> pacote, Produto produto, int MAX_VOLUME_PACOTE) {
 		int soma = 0;
 		for (int i = 0; i < pacote.size(); i++) {
@@ -17,14 +15,14 @@ public class Robo {
 		}
 		if (soma + produto.getVolumePorProduto() < MAX_VOLUME_PACOTE) {
 			pacote.add(produto);
+			System.out.println("Produto de "+ produto.getFornecedor() +" empacotado!");
 		}
 	}
 
-	public LinkedList<Produto> colocarNaEsteira(String fornecedor, LinkedList<Produto> pacote) {
+	public List<Produto> colocaNaEsteira(String fornecedor, List<Produto> pacote) {
 		// pega um pacote vazio e coloca na esteira;
 		pacote = new LinkedList<Produto>();
 		System.out.println("Pacote colocado na esteira");
 		return pacote;
 	}
 	
-}
