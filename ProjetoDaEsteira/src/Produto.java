@@ -17,6 +17,19 @@ public class Produto {
 		this.prazo = prazo;
 	}
 
+	public static Produto converterLinhaCSVEmProduto(String linha, String separador) {
+		String[] partes = linha.split(separador);
+		if(partes.length != 4) {
+			throw new IllegalArgumentException("Linha de produto está incorreta: " + linha);
+			
+		}
+		try {
+			return new Produto(partes[0].trim(), Integer.parseInt(partes[1].trim()), Integer.parseInt(partes[2].trim()), Integer.parseInt(partes[3].trim()));
+		} catch(NumberFormatException e) {
+			throw new IllegalArgumentException("Linha de produto está incorreta: "+ linha);
+		}
+	}
+
 	public String getFornecedor() {
 		return fornecedor;
 	}
@@ -48,7 +61,5 @@ public class Produto {
 	public void setPrazo(int prazo) {
 		this.prazo = prazo;
 	}
-	
-	
 
 }
