@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.SortingFocusTraversalPolicy;
+
 public class Controladora {
 
 	// Constantes
@@ -54,8 +56,16 @@ public class Controladora {
 	// -----ALGORITMOS-----
 
 	public static void ShortestJobFirst(List<Produto> produtos) {
+		List<Produto> produtos1 = new LinkedList<Produto>();
 		Collections.sort(produtos);
+		/*for(int i = 0; i < produtos.size(); i++) {
+			if(produtos.get(i).getPrazo() == 0) {
+				produtos1.add(produtos.get(i));
+				produtos.remove(i);
+			}
+		}*/
 		pacote1 = new LinkedList<Produto>();
+		pacote2 = new LinkedList<Produto>();
 		loopSJFPrioridade(produtos);
 		loopSJFEmZero(produtos);
 		System.out.println("Tempo total da execução do SJF: " + tempoTotal);
@@ -67,20 +77,24 @@ public class Controladora {
 
 	public static void loopSJFEmZero(List<Produto> produtos) {
 		int prazo = 0;
-		boolean verifica = false;
+		boolean verifica = true;
 		for (int i = 0; i < produtos.size(); i++) {
+			
 			prazo = produtos.get(i).getPrazo();
-			pacote1.removeAll(pacote1);
-			bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
-			tempoTotal += TRANSICAO_PACOTE;
-			if (prazo != 0) {
+			//System.out.println("prazo"+prazo);
+			
+			pacote2.removeAll(pacote2);
+			//tempoTotal += TRANSICAO_PACOTE;
+			if (prazo == 0) {
+				bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote2);
 				while (produtos.get(i).getTotalProdutos() != 0) {
-					verifica = bracoMecanico.adicionaNoPacote(pacote1, produtos.get(i), MAX_VOLUME_PACOTE);
+					
+					verifica = bracoMecanico.adicionaNoPacote(pacote2, produtos.get(i), MAX_VOLUME_PACOTE);
 					if (verifica == false) {
-						pacote1.removeAll(pacote1);
-						bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
+						pacote2.removeAll(pacote2);
+						bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote2);
 						esteira.porNaCaixa(produtos, i);
-						//tempoTotal += TRANSICAO_PACOTE;
+						tempoTotal += TRANSICAO_PACOTE;
 					} else {
 						produtos.get(i).setTotalProdutos(produtos.get(i).getTotalProdutos() - 1);
 						tempoTotal += TEMPO_PRODUCAO_PACOTE;
@@ -95,20 +109,21 @@ public class Controladora {
 	
 	public static void loopSJFPrioridade(List<Produto> produtos) {
 		int prazo = 0;
-		boolean verifica = false;
+		boolean verifica = true;
 		for (int i = 0; i < produtos.size(); i++) {
 			prazo = produtos.get(i).getPrazo();
+			//System.out.println("prazp1"+prazo);
 			pacote1.removeAll(pacote1);
 			bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
 			tempoTotal += TRANSICAO_PACOTE;
-			if (prazo == 0) {
+			if (prazo != 0) {
 				while (produtos.get(i).getTotalProdutos() != 0) {
 					verifica = bracoMecanico.adicionaNoPacote(pacote1, produtos.get(i), MAX_VOLUME_PACOTE);
 					if (verifica == false) {
 						pacote1.removeAll(pacote1);
 						bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
 						esteira.porNaCaixa(produtos, i);
-						//tempoTotal += TRANSICAO_PACOTE;
+						tempoTotal += TRANSICAO_PACOTE;
 					} else {
 						produtos.get(i).setTotalProdutos(produtos.get(i).getTotalProdutos() - 1);
 						tempoTotal += TEMPO_PRODUCAO_PACOTE;
