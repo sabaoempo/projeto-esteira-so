@@ -19,6 +19,10 @@ public class Robo {
 		}
 	}
 
+	public static void adicionaNoPacoteRR(List<Produto> pacote, Produto produto) {
+		pacote.add(produto);
+		System.out.println("Produto de "+ produto.getFornecedor() +" empacotado! PRAZO: " + produto.getPrazo());
+	}
 	public List<Produto> colocaNaEsteira(String fornecedor, List<Produto> pacote) {
 		// pega um pacote vazio e coloca na esteira;
 		pacote = new LinkedList<Produto>();
