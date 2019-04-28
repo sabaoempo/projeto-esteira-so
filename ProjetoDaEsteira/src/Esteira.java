@@ -5,14 +5,12 @@ public class Esteira {
 		
 	}
 	
-	public boolean porNaCaixa(List<Produto> pacote) {
+	public void porNaCaixa(List<Produto> pacote, int indice) {
 		if(pacote.size() == 0) {
 			System.out.println("Pacote vazio");
-			return true;
 		} else {
-			System.out.println("Colocou o pacote de "+ pacote.get(0).getFornecedor() +" na caixa");
-			pacote.removeAll(pacote);
-			return false;
+			System.out.println("Colocou o pacote de "+ pacote.get(indice).getFornecedor() +" na caixa");
+			//pacote.removeAll(pacote);
 		}
 	}
 }
