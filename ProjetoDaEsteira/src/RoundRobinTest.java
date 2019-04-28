@@ -8,62 +8,92 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * 
- * @author Dinesh Krishnan
- *
- */
+
 
 public class RoundRobinTest {
 	static final String CAMINHO_ARQUIVO = "C:\\Users\\Karol - PC\\Downloads\\projeto-esteira-so-master\\ProjetoDaEsteira\\src\\arquivoteste.csv";
 	static final int MAX_VOLUME_PACOTE = 5000;
 	static Robo bracoMecanico = new Robo();
-	public static List<Produto> lerProdutos(String arquivo, String separador) throws IOException {
-		return Files.readAllLines(new File(arquivo).toPath(), StandardCharsets.UTF_8).stream().skip(1)
+	static double totalVolume = 0;
+	static List<Produto> pacote1 = new ArrayList<Produto>();
+	static List<Produto> pacote2 = new ArrayList<Produto>();
+	static List<Produto> pacote3 = new ArrayList<Produto>();
+	public static ArrayList<Produto> lerProdutos(String arquivo, String separador) throws IOException {
+		return (ArrayList<Produto>) Files.readAllLines(new File(arquivo).toPath(), StandardCharsets.UTF_8).stream().skip(1)
 				.map(p -> Produto.converterLinhaCSVEmProduto(p, separador)).collect(Collectors.toList());
 	}
-	public static List<Produto> getResources() throws IOException {
-		List<Produto> produtosConvertidosDoCSV = lerProdutos(CAMINHO_ARQUIVO, ";");
-		List<Produto> resourceList = new ArrayList<Produto>();
-		List<Produto> pacote1 = new ArrayList<Produto>();
-		List<Produto> pacote2 = new ArrayList<Produto>();
-		List<Produto> pacote3 = new ArrayList<Produto>();
-		
-
+	
+	
+	public static void RoundRobin() throws IOException {
+		ArrayList<Produto> produtosConvertidosDoCSV = lerProdutos(CAMINHO_ARQUIVO, ";");
+		ArrayList<Produto> prioridade0=new ArrayList<Produto>();
+		ArrayList<Produto> aux = new ArrayList<Produto>();
+		Produto p=new Produto();
 		Collections.sort(produtosConvertidosDoCSV);
-		bracoMecanico.adicionaNoPacote(pacote1,produtosConvertidosDoCSV.get(0) , MAX_VOLUME_PACOTE);
-
-//		resourceList.add(produtosConvertidosDoCSV.get(0));
-//		resourceList.add(produtosConvertidosDoCSV.get(1));
-//		resourceList.add(produtosConvertidosDoCSV.get(2));
-		for(int i = 0; i < produtosConvertidosDoCSV.size(); i++) {
-			bracoMecanico.adicionaNoPacote(pacote1,produtosConvertidosDoCSV.get(i) , MAX_VOLUME_PACOTE);
-			bracoMecanico.adicionaNoPacote(pacote2,produtosConvertidosDoCSV.get(i+1) , MAX_VOLUME_PACOTE);
-			bracoMecanico.adicionaNoPacote(pacote3,produtosConvertidosDoCSV.get(i+2) , MAX_VOLUME_PACOTE);
+		for(int i=0; i<produtosConvertidosDoCSV.size();i++) {
+		if(produtosConvertidosDoCSV.get(i).getPrazo()==0) {
+			prioridade0.add(produtosConvertidosDoCSV.get(i));
+			produtosConvertidosDoCSV.remove(i);
+		}}
+		for(int i=0; i<produtosConvertidosDoCSV.size();i++) {
+		p=produtosConvertidosDoCSV.get(i);
+		totalVolume=p.getVolumePorProduto()*p.getTotalProdutos();
+		double resto=0;
+		double quant=0;
+		if(totalVolume<MAX_VOLUME_PACOTE) {
+			
+			if(p.getPrazo()!=0) 
+			bracoMecanico.adicionaNoPacoteRR(pacote1, produtosConvertidosDoCSV.get(i));
 		}
-		return pacote1;
-	}
+		if(totalVolume>MAX_VOLUME_PACOTE) {
+		
+			resto=totalVolume-MAX_VOLUME_PACOTE;
+			quant=resto/p.getVolumePorProduto();
+			p.setTotalProdutos((int)quant);
+			
+			if(p.getPrazo()!=0) {
+				System.out.println("PASEEI AQUI 1");
+			aux.add(p);
+			bracoMecanico.adicionaNoPacoteRR(pacote1, produtosConvertidosDoCSV.get(i));
+			}}}
+		
+		
+		//System.out.println(aux.toString());
+		for(int j = 0; j<aux.size();j++) {
+			p=aux.get(j);
+			totalVolume=p.getVolumePorProduto()*p.getTotalProdutos();
+			double resto2=0;
+			double quant2=0;
+			if(totalVolume>MAX_VOLUME_PACOTE) {
+				System.out.println("PASEEI AQUI 2");
+				resto2=totalVolume-MAX_VOLUME_PACOTE;
+				quant2=resto2/p.getVolumePorProduto();
+				p.setTotalProdutos((int)quant2);
+				aux.add(p);
+				bracoMecanico.adicionaNoPacoteRR(pacote1, aux.get(j));
+			}
+		}	
+		for(int i=0;i<prioridade0.size();i++) {
+			p=prioridade0.get(i);
+			totalVolume=p.getVolumePorProduto()*p.getTotalProdutos();
+			double resto=0;
+			double quant=0;
+			if(totalVolume>MAX_VOLUME_PACOTE) {
+				System.out.println("PASEEI AQUI 3");
+				resto=totalVolume-MAX_VOLUME_PACOTE;
+				quant=resto/p.getVolumePorProduto();
+				p.setTotalProdutos((int)quant);
+				aux.add(p);
+				bracoMecanico.adicionaNoPacoteRR(pacote1, prioridade0.get(i));
+			}
+		}
+}
+
+		
 
 	public static void main(String[] args) throws IOException {
-
-		// creating container with resources
-		RoundRobin<Produto> rr = new RoundRobinImpl<Produto>(getResources());
 		
-		try {
-
-			// selecting the resource
-			System.out.println(rr.select().getFornecedor());
-			System.out.println(rr.select().getFornecedor());
-			System.out.println(rr.select().getFornecedor());
-
-			System.out.println(rr.select().getFornecedor());
-			System.out.println(rr.select().getFornecedor());
-			System.out.println(rr.select().getFornecedor());
-
-		} catch (RoundRobinException e) {
-
-			System.out.println(e.getMessage());
-		}
+		RoundRobin();
 
 	}
 }
