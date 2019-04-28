@@ -54,63 +54,76 @@ public class Controladora {
 	// -----ALGORITMOS-----
 
 	public static void ShortestJobFirst(List<Produto> produtos) {
-		//pegar as prioridades por tempo (em minutos)
 		Collections.sort(produtos);
-		int prazo;
-		boolean verifica;
-		
-		//fazer pacotes dos produtos prioritarios
 		pacote1 = new LinkedList<Produto>();
-		
-		for(int i = 0; i<produtos.size(); i++) {
-			prazo = produtos.get(i).getPrazo();
-			pacote1.removeAll(pacote1);
-			bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
-			if(prazo != 0) {
-				while(produtos.get(i).getTotalProdutos() != 0) {
-					verifica = bracoMecanico.adicionaNoPacote(pacote1, produtos.get(i), MAX_VOLUME_PACOTE);
-					if(verifica == false) {
-						pacote1.removeAll(pacote1);
-						bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
-					} else
-						produtos.get(i).setTotalProdutos(produtos.get(i).getTotalProdutos()-1);
-				}
-			}
-		}
-		
-		
+		loopSJFPrioridade(produtos);
+		loopSJFEmZero(produtos);
+		System.out.println("Tempo total da execução do SJF: " + tempoTotal);
 	}
 
 	public void RoundRobin() {
 
 	}
 
-	public static void main(String[] args) throws IOException {
-
-		List<Produto> produtosConvertidosDoCSV = lerProdutos(CAMINHO_ARQUIVO, ";");
-		// int total = totalProdutos(produtosConvertidosDoCSV);
-		//int somaprazo = totalTempo(produtosConvertidosDoCSV);
-		// for(int i = 0; i < totalprazos.length-1; i++) {
-		// System.out.println(totalprazos[i]);
-		// }
-		// System.out.println(total);
-		// System.out.println(produtosConvertidosDoCSV.get(0).getFornecedor().toString());
-
-		/*pacote1 = bracoMecanico.colocaNaEsteira("Kelton", pacote1);
-		tempoTotal += TEMPO_PRODUCAO_PACOTE;
-		eVazio = esteira.porNaCaixa(pacote1);
-		if (!eVazio) {
+	public static void loopSJFEmZero(List<Produto> produtos) {
+		int prazo = 0;
+		boolean verifica = false;
+		for (int i = 0; i < produtos.size(); i++) {
+			prazo = produtos.get(i).getPrazo();
+			pacote1.removeAll(pacote1);
+			bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
 			tempoTotal += TRANSICAO_PACOTE;
-			// System.out.println(tempoTotal);
-		}*/
-		// System.out.println(tempoTotal);
-		//Collections.sort(produtosConvertidosDoCSV);
-		//for (int i = 0; i < produtosConvertidosDoCSV.size(); i++) {
-			//System.out.println(produtosConvertidosDoCSV.get(i).getFornecedor());
-		//}
+			if (prazo != 0) {
+				while (produtos.get(i).getTotalProdutos() != 0) {
+					verifica = bracoMecanico.adicionaNoPacote(pacote1, produtos.get(i), MAX_VOLUME_PACOTE);
+					if (verifica == false) {
+						pacote1.removeAll(pacote1);
+						bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
+						esteira.porNaCaixa(produtos, i);
+						//tempoTotal += TRANSICAO_PACOTE;
+					} else {
+						produtos.get(i).setTotalProdutos(produtos.get(i).getTotalProdutos() - 1);
+						tempoTotal += TEMPO_PRODUCAO_PACOTE;
+					}
+					if (produtos.get(i).getTotalProdutos() == 0) {
+						System.out.println("\n\nTodos os produtos de " + produtos.get(i).getFornecedor() + " foram empacotados.\n\n");
+					}
+				}
+			} 
+		}
+	}
+	
+	public static void loopSJFPrioridade(List<Produto> produtos) {
+		int prazo = 0;
+		boolean verifica = false;
+		for (int i = 0; i < produtos.size(); i++) {
+			prazo = produtos.get(i).getPrazo();
+			pacote1.removeAll(pacote1);
+			bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
+			tempoTotal += TRANSICAO_PACOTE;
+			if (prazo == 0) {
+				while (produtos.get(i).getTotalProdutos() != 0) {
+					verifica = bracoMecanico.adicionaNoPacote(pacote1, produtos.get(i), MAX_VOLUME_PACOTE);
+					if (verifica == false) {
+						pacote1.removeAll(pacote1);
+						bracoMecanico.colocaNaEsteira(produtos.get(i).getFornecedor(), pacote1);
+						esteira.porNaCaixa(produtos, i);
+						//tempoTotal += TRANSICAO_PACOTE;
+					} else {
+						produtos.get(i).setTotalProdutos(produtos.get(i).getTotalProdutos() - 1);
+						tempoTotal += TEMPO_PRODUCAO_PACOTE;
+					}
+					if (produtos.get(i).getTotalProdutos() == 0) {
+						System.out.println("Todos os produtos de " + produtos.get(i).getFornecedor() + " foram empacotados.");
+					}
+				}
+			} 
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
+		List<Produto> produtosConvertidosDoCSV = lerProdutos(CAMINHO_ARQUIVO, ";");
 		ShortestJobFirst(produtosConvertidosDoCSV);
-
-		//System.out.println("prazo real" + somaprazo);
-
 	}
 }
+
