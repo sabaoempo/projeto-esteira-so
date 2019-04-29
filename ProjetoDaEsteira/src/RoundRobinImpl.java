@@ -16,51 +16,12 @@ public class RoundRobinImpl {
 	static Robo bracoMecanico = new Robo();
 	static double totalVolume = 0;
 	static ArrayList<Produto> aux = new ArrayList<Produto>();
-	static ArrayList<Produto> aux2 = new ArrayList<Produto>();
-	static List<Produto> pacote2 = new ArrayList<Produto>();
-	static List<Produto> pacote3 = new ArrayList<Produto>();
 	static ArrayList<Produto> prioridade0=new ArrayList<Produto>();
 	public static ArrayList<Produto> lerProdutos(String arquivo, String separador) throws IOException {
 		return (ArrayList<Produto>) Files.readAllLines(new File(arquivo).toPath(), StandardCharsets.UTF_8).stream().skip(1)
 				.map(p -> Produto.converterLinhaCSVEmProduto(p, separador)).collect(Collectors.toList());
 	}
 	
-//public static void primeiroPasso2(Produto p,ArrayList<Produto>aux) {
-//		
-//		//Produto p=new Produto();
-//		//for(int i=0; i<produtosConvertidosDoCSV.size();i++) {
-//		//p=produtosConvertidosDoCSV.get(i);
-////	while(produtosConvertidosDoCSV!=null) {
-//		totalVolume=p.getVolumePorProduto()*p.getTotalProdutos();
-//		double resto=0;
-//		double quant=0;
-//		if(totalVolume<MAX_VOLUME_PACOTE) {
-//			List<Produto> pacote1  = new ArrayList<Produto>();
-//			if(p.getPrazo()!=0) 
-//				System.out.println("SO PRA SABER MSM");
-//			bracoMecanico.colocaNaEsteira(p.getFornecedor(), pacote1);
-//			bracoMecanico.adicionaNoPacoteRR(pacote1, p);
-//			
-//		}
-//		if(totalVolume>MAX_VOLUME_PACOTE) {
-//			List<Produto> pacote1  = new ArrayList<Produto>();
-//			resto=totalVolume-MAX_VOLUME_PACOTE;
-//			quant=resto/p.getVolumePorProduto();
-//			p.setTotalProdutos((int)quant);
-//			
-//			if(p.getPrazo()!=0) {
-//				System.out.println("PASEEI AQUI 1");
-//			aux.add(p);
-//			bracoMecanico.colocaNaEsteira(p.getFornecedor(), pacote1);
-//			bracoMecanico.adicionaNoPacoteRR(pacote1, p);
-//			}}
-////		if(produtosConvertidosDoCSV.get(i).getTotalProdutos()!=0) {
-////			
-////			primeiroPasso(aux,produtosConvertidosDoCSV);
-////		}
-//	}	
-	
-
 	public static void primeiroPasso(ArrayList<Produto> produtosConvertidosDoCSV,ArrayList<Produto>aux) {
 		
 		Produto p=new Produto();
@@ -108,8 +69,9 @@ public class RoundRobinImpl {
 		if(produtosConvertidosDoCSV.get(i).getPrazo()==0) {
 			prioridade0.add(produtosConvertidosDoCSV.get(i));
 			produtosConvertidosDoCSV.remove(i);
-		}}
-	
+		}
+		}
+		
 		primeiroPasso(produtosConvertidosDoCSV,aux);
 		
 		primeiroPasso(prioridade0,aux);
